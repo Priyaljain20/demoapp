@@ -1,0 +1,25 @@
+video 1
+pip install passlib
+
+
+create scipt to run through command
+run file:
+    FLASK_APP=app.py FLASK_ENV=development flask run
+command in cmd:
+    ./run (this will be user defined so need to register)
+    sudo chmod +x run (registering above ./run command)
+
+
+how does @app.route("path")  work
+@wrap working
+secret key
+ajax, jquerry 
+
+
+$(selector).action()
+$(this).hide() - hides the current element.
+$("p").hide() - hides all <p> elements.
+$(".test").hide() - hides all elements with class="test".
+$("#test").hide() - hides the element with id="test".
+
+

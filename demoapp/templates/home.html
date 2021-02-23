@@ -1,0 +1,57 @@
+{% extends "base.html"%}
+
+{% block content %}
+
+<link rel="stylesheet" href="/static/css/normalize.css">
+<link rel="stylesheet" href="/static/css/home_styles.css">
+<div class="card-wrapper">
+  <div class="card">
+
+<!--signup_form-->
+    <h1 class="center">Create an Account</h1>
+    <form name="signup_form">
+
+        <label for="Name">Name</label>
+        <input type="text" name="name" required>
+
+        <label for="email">Email</label>
+        <input type="email" name="email" required>
+        
+        <label for="password">Password</label>
+        <input type="password" name="password" required>
+
+        <label for="rewrite_password">Rewrite Password</label>
+        <input type="password" name="rewrite_password" required>
+
+        <p class="error error--hidden" id = 'p1'>
+
+        </p>
+
+        <input type="submit" value="signup" >
+    </form>
+  </div>
+
+  <div class="card">
+
+<!--login form-->
+    <h1 class="center">Log In</h1>
+    <form name="login_form">
+
+        <label for="email">Email</label>
+        <input type="email" name="email" required>
+        
+        <label for="password">Password</label>
+        <input type="password" name="password" required>
+
+        <p class="error error--hidden" id = 'p1'>
+
+        </p>
+
+        <input type="submit" value="login" >
+    </form>
+  </div>
+  
+</div>
+
+
+{% endblock %}
