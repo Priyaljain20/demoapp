@@ -1,0 +1,274 @@
+{% extends "base.html"%}
+
+{% block content%}
+    
+   <!--hii{{session['user']}}
+   hii{{id}}-->
+   <head>
+         <title>profile</title>
+         <link rel="stylesheet" type="text/css" href="/static/css/profile_css.css">
+         <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+         <script src="https://rawgit.com/neo4j-contrib/neovis.js/master/dist/neovis.js"></script>
+   </head>
+
+   <!--displaying graph-->
+  <script type="text/javascript">
+      var cookie = Cookies('session');
+      console.log(cookie+"sdffffffffffffffffffffffffffffffffffffffffffffffffff");
+      var viz;
+      var level=1;
+      function draw(level=0,employee1=document.getElementById("user_id"),employee2=document.getElementById("user_id")) {
+          var query="";
+          if(level==-1)
+                  query="MATCH  (a:user {_id:'"+employee1+"'}),(b:user {_id:'"+employee2+"'}),p = allShortestPaths((a)-[*]-(b))RETURN p";
+          else if (level=="all")
+                  query="MATCH (a:user) OPTIONAL MATCH (a:user)-[m*]-(b) return a,m,b";
+          else
+                  query="MATCH (a:user{_id:\""+document.getElementById("user_id").innerText+"\"})-[m*0.."+level+"]-(b) return a,b,m";
+          
+            
+          var config = {
+              container_id: "viz",
+              server_url: "bolt://localhost:7687",
+              server_user: "neo4j",
+              server_password: "priyal",
+              labels: {
+                  "user": {
+                      "caption": "name",
+                      "size": "pagerank",
+                      "community": "community",
+                      "title_properties": [
+                          "name",
+                          "pagerank"
+                      ]
+                  }
+              },
+              relationships: {
+                  "INTERACTS": {
+                      "thickness": "weight",
+                      "caption": false
+                  }
+              },
+              //initial_cypher: "MATCH (a)-[m]-(b) return a,b,m"
+              initial_cypher: query,
+              arrows: true
+          };
+          console.log(query);
+          console.log(document.getElementById("user_id").innerText+"----------------------------------------");
+          viz = new NeoVis.default(config);
+          viz.render();
+      }
+  </script>
+
+  <!--two managers redirection to draw() function-->
+  <script>
+      $(document).ready(function() {
+            var last_valid_selection = null;
+            $('#two_managers').change(function(event) {
+                  if ($(this).val().length > 2) {
+                        $(this).val(last_valid_selection);
+                  } else {
+                        last_valid_selection = $(this).val();
+                        if (last_valid_selection.length==2){
+                              draw(-1,last_valid_selection[0],last_valid_selection[1]);
+                        } 
+                  }
+            });
+      });
+  </script>
+
+  <!--text display of manager and reportee-->
+  <script>
+        function getManagerAndReportee(){
+              console.log($('select#get_manager_and_reportee').serialize());
+              document.getElementById('reportee_of_selected_employee').innerHTML="";
+              document.getElementById('manager_of_selected_employee').innerHTML="";
+              $.ajax({
+                  type: "POST",
+                  url: "/user/get_manager_and_reportee",
+                  data: $('select#get_manager_and_reportee').serialize(),
+                  success: function(resp){
+                        console.log(resp);
+                        console.log(resp['manager']);
+                        console.log(resp['reportee']);
+                        for (var i = 0; i < resp['reportee'].length; i++) 
+                              document.getElementById('reportee_of_selected_employee').innerHTML+=('. NAME: '+resp['reportee'][i]['name']+'     ID: '+resp['reportee'][i]['ID']+"<br>");
+                        
+                        for (var i = 0; i < resp['manager'].length; i++)
+                              document.getElementById('manager_of_selected_employee').innerHTML+=('. NAME: '+resp['manager'][i]['name']+'     ID: '+resp['manager'][i]['ID']);
+                        
+                  },
+                  error:function(resp){
+
+                  }
+              });
+        }
+  </script>
+
+  <!--getting manager-->
+  <script>      
+        const api_url = "/user/get_managers"; 
+      // Function to define innerHTML for HTML table 
+      function show(data) { 
+            for (let r of data) {
+                  $('#managers').append(`<option value="${r._id}">${r.name} ID: ${r._id}</option>`);
+                  $('#two_managers').append(`<option value="${r._id}">${r.name} ID: ${r._id}</option>`);
+                  $('#get_manager_and_reportee').append(`<option value="${r._id}">${r.name} ID: ${r._id}</option>`);
+                  console.log("printting r"+r);
+            } 
+      } 
+      // Defining async function 
+      async function getapi(url) { 
+            // Storing response 
+            const response = await fetch(url); 
+            // Storing data in form of JSON 
+            var data = await response.json(); 
+            show(data); 
+      } 
+      // Calling that async function 
+      getapi(api_url);      
+  </script>
+
+  <!--setting manager -->
+  <script>
+        $(document).ready(function(){
+
+            $('#select_manager_form').on('submit',function (e) {
+            $.ajax({
+                  type: 'POST',
+                  url: '/user/set_manager',
+                  data: $('#select_manager_form').serialize(),
+                  xhrFields: {
+                        withCredentials: true
+                  },
+                  crossDomain: true,
+                  success: function (resp) {
+                        document.getElementById("select manager p").innerHTML= "sucessfully registerd manager";
+                  },
+                  error:function(resp){
+                        document.getElementById("select manager p").innerHTML= "error registerning manager";
+                  }
+            });
+            e.preventDefault();
+            });
+
+      });
+  </script>
+
+  <!--header-->
+<link rel="stylesheet" href="/static/css/dashboard_styles.css">
+  <header>
+      <div class="header">
+        <a href="#default" class="logo">
+            <h3>{{session['user']['name']}}</h3>
+            <h6><p>Engneer at <strong>Darwin Box </strong><br>
+            <i class="fa fa-map-marker" aria-hidden="true"></i>  Hyderabad, India</p></h6>
+        </a>
+        <div class="header-right">
+            <a href="/user/{{ session['user']['_id'] }}">{{ session['user']['name'] }}</a>
+            <a href="/user/group_chat">Group Chat</a>
+            <a class="active" href="/user/signout">Sign out</a>
+        </div>
+      </div> 
+  </header>
+
+   <body>
+         <div class="profile-main">
+               <div class="profile-header">                    
+                     <div class="tab-panel-main">
+                           <ul class="tabs">
+                                 <li class="tab-link current" data-tab="Basic-detail">Details</li>
+                                 <li class="tab-link" data-tab="Portfolio">View Colleagues</li>
+                           </ul>
+                            
+                           <div id="Basic-detail" class="tab-content current">
+                                 <div class="skill-box">
+                                    <ul>
+                                        <li><strong>ID:</strong></li>
+                                        <li id='user_id'>{{session['user']['_id']}}</li>
+                                    </ul>		
+                                    <ul>
+                                        <li><strong>Name:</strong></li>
+                                        <li> {{session['user']['name']}}</li>
+                                    </ul>	
+                                    <ul>
+                                        <li><strong>Email:</strong></li>
+                                        <li> {{session['user']['email']}}</li>
+                                    </ul>	
+                                    {% if session['user']['manager_id'] %}
+                                    <ul>
+                                        <li><strong>Manager Name/ID:</strong></li>
+                                        <li> (ID:{{session['user']['manager_id']}})</li>
+                                    </ul>	 
+                                    {% else %}
+                                    <ul>
+                                       <li><strong>Choose Manager:</strong></li>
+                                       <div class="desc">
+                                          <form name="select_manager_form" id="select_manager_form">
+                                                <select name="managers" id="managers">
+                                                      <option value="none">none</option>
+                                                </select>
+                                                <p class="error error--hidden" id = 'select manager p'></p>
+                                                <input type="submit" value="set_manager" >
+                                          </form>
+                                       </div>
+                                    </ul>
+                                    {% endif %}
+                                 </div>
+                                 
+                           </div>
+                           
+                           <div id="Portfolio" class="tab-content">
+
+                              <li><strong>Choose levels or two employee:</strong></li>
+                              <select name='get_manager_and_reportee' id='get_manager_and_reportee' onchange="getManagerAndReportee()">
+                                    <option value=0 selected >none</option>
+                              </select>
+                              <br>
+                              <label>Manager of selected employee is:</label>
+                              <p id='manager_of_selected_employee'>  </p>
+                              <label>Reportees of selected employee is:</label>
+                              <p id='reportee_of_selected_employee'>  </p>
+                              <li><strong>Choose levels or two employee:</strong></li>
+                              <select onchange="draw(this.value)">
+                                 <optgroup label="Options 1">
+                                    <option value=0 selected >0</option>
+                                    <option value=1 >1</option>
+                                    <option value=2 >2</option>
+                                    <option value=3 >3</option>
+                                    <option value="all" >all</option>
+                                 </optgroup>
+                              </select>
+                              
+                              <li><strong>Select two employee:</strong></li>
+                              <select name="two_managers" id="two_managers" multiple>
+                                    <option value="none">none</option>
+                              </select> 
+                              
+                              <div class="portfolio-box" >
+                                       <body onload="draw(0)" >
+                                          <div id='viz' ></div>
+                                       </body>
+                              </div>
+                           </div>
+                     </div>
+               </div>
+               <div style="clear: both;"></div>
+               
+         </div>
+   <script type="text/javascript">
+         $(document).ready(function(){
+               $('ul.tabs li').click(function(){
+                     var tab_id = $(this).attr('data-tab');
+   
+                     $('ul.tabs li').removeClass('current');
+                     $('.tab-content').removeClass('current');
+   
+                     $(this).addClass('current');
+                     $("#"+tab_id).addClass('current');
+               });
+         });
+   </script>
+   </body>
+{% endblock %}

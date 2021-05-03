@@ -11,7 +11,8 @@
   <div class="header">
     <a href="#default" class="logo">ChatBot App</a>
     <div class="header-right">
-        <a href="#">{{ session['user']['name'] }}</a>
+        <a href="/user/{{ session['user']['_id'] }}">{{ session['user']['name'] }}</a>
+        <a href="/user/group_chat">Group Chat</a>
         <a class="active" href="/user/signout">Sign out</a>
     </div>
   </div> 

@@ -1,0 +1,89 @@
+{% extends "base.html"%}
+
+{% block content%}
+
+<link rel="stylesheet" href="/static/css/dashboard_styles.css">
+<head><script src="/static/js/jquery.js"></script></head>
+
+<!--header-->
+<header>
+  <div class="header">
+    <a href="#default" class="logo">ChatBot App</a>
+    <div class="header-right">
+        <a href="/user/{{ session['user']['_id'] }}">{{ session['user']['name'] }}</a>
+        <a class="active" href="/user/signout">Sign out</a>
+    </div>
+  </div> 
+</header>
+
+<body>
+    <ul id="group_chat_list" name="group_chat_list">
+        <li></li>
+    </ul>
+
+    
+    <form name="group_chat_message_form"  >
+        <input type="text" id="group_chat_message" name="group_chat_message" autocomplete="on" placeholder="Type a message"required>
+        <input type="submit" value="send" >
+    </form>
+
+
+<script>      
+const api_url = "/user/get_group_chats_list"; 
+// Function to define innerHTML for HTML table 
+function show(data) { 
+  //console.log("dataaaaaaaaaaaaaaaaa-----"+data);
+    for (let r of data) {
+        var node = document.createElement("LI");  
+        node.appendChild(document.createTextNode("USER : "+r['email']+"  \n  MESSAGE : "+r['message']+"    TIME : "+r['timestamp']));   
+        document.getElementById("group_chat_list").appendChild(node); 
+        console.log("printting r"+r['email']);
+    } 
+} 
+// Defining async function 
+async function getapi(url) { 
+    // Storing response 
+    const response = await fetch(url); 
+    // Storing data in form of JSON 
+    var data = await response.json(); 
+    show(data); 
+} 
+// Calling that async function 
+getapi(api_url);      
+</script>
+
+<script>
+  $("form[name='group_chat_message_form']").submit(function(e) {
+
+    console.log("dssdlalalas");
+     var $form = $(this);
+   //var $error = $form.find(".error");
+   var data = $form.serialize();
+
+   $.ajax({
+     url: "/user/add_group_chat_message",
+     type: "POST",
+     data: data,
+     dataType: "json",
+  
+     success: function(resp) {
+       console.log(data +" ssssssssssssssssssssssssssssssss");
+       var node = document.createElement("LI");  
+        node.appendChild(document.createTextNode("USER : "+resp['email']+"  \n  MESSAGE : "+resp['message']+"    TIME : "+resp['timestamp']));   
+        document.getElementById("group_chat_list").appendChild(node); 
+
+      }//,
+     // error: function(resp) {
+     //   console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+     //   $error.text(resp.responseJSON.error).removeClass("error--hidden");
+     // }
+   });
+
+      e.preventDefault();
+  });
+
+</script>
+
+</body>
+
+{% endblock %}
