@@ -1,0 +1,146 @@
+#viz {
+    margin:auto;
+    width: 1000px;
+    height: 400px;
+    border: 1px solid lightgray;
+    justify-content: center;
+    font: 15pt arial;
+}
+
+body{
+font-family: calibri;
+margin-top: 1000px;
+}
+.profile-main{
+width: 100%;
+margin: 0 auto;
+border: 1px solid #aed5e2;
+padding-bottom: 5px;
+}
+.header{
+height: 150px;
+width: 100%;
+border-bottom: 2px solid #E2F3FB;
+}
+
+
+/*tab*/
+.tab-panel-main{
+width: 75%;
+margin: 0 auto;
+}
+ul.tabs{
+margin: 0px;
+padding: 0px;
+list-style: none;
+display: flex;
+position: absolute;
+top: 150px;
+right: 400px;
+}
+ul.tabs li{
+color: #222;
+display: inline-block;
+padding: 10px 15px;
+border-right: 1px solid #E2F3FB;
+border-top: 2px solid #E2F3FB;
+cursor: pointer;
+background: #FAFBFB;
+}
+ul.tabs li:last-child{
+border-right: 2px solid #E2F3FB;
+}
+ul.tabs li:first-child{
+border-left: 2px solid #E2F3FB;
+}
+ul.tabs li.current{
+background: #10A3FF;
+color: #fff;
+font-weight: 600;
+}
+.tab-content{
+display: none;
+padding: 100px 100px;
+}
+.tab-content.current{
+display: inherit;
+}
+.skill-box{
+border:1px solid #ededed;
+border-radius: 3px;
+padding: 0px 20px;
+height: 220px;
+margin:auto;
+}
+.skill-box ul li strong{
+font-size: 16px;
+}
+.skill-box ul{ 
+margin: 10;
+padding: 0;
+list-style: none;
+}
+.skill-box ul li{
+display: inline-block;
+font-size: 14px;
+margin-right: 4px;
+padding: 4px 4px;
+border-radius: 2px;
+}
+.skill-box ul li:hover{
+background-color: #FF6E00;
+color: #fff !important;
+}
+.skill-box ul li:first-child:hover{
+background-color: #fff;
+color: black !important;
+}
+.skill-box ul li i{
+margin-left: 4px;
+margin-right: 1px;
+}
+
+#Portfolio{
+height: 1000px;
+padding-left: 0px;
+padding-right: 0px;
+margin: auto; 
+}
+.portfolio-box{
+border: 1px solid #ededed;
+border-radius: 4px;
+padding: 0px 20px;
+justify-content: center;
+height: 220px;
+margin:auto;
+}
+
+#Basic-detail{
+height: 600px;
+
+padding-left: 0px;
+padding-right: 0px; 
+}
+
+@media {
+.profile-main{
+width: 100%;
+}
+ul.tabs{
+width: 97%;
+font-size: 13.5px;
+right: 0px;
+top: 261px;
+left: 7px;
+}
+.profile-header{
+height: 250px;
+}
+.portfolio-box, .portfolio-img-box{
+height: auto;
+}
+
+#Portfolio, #Edu-detail, #Basic-detail{
+height: auto;
+}
+}
